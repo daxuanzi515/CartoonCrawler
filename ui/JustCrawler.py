@@ -87,13 +87,13 @@ class JustCrawlerWindow(QMainWindow):
         self.select_save_path_ = QPushButton(text='选择生成路径')
         self.check_crawler_result_ = QPushButton(text='查看爬取结果')
 
-        # for 1: textEditor + button
+        # for 4: textEditor + button
         self.h_layout_4.addWidget(self.textEditor_input_web)
         self.h_layout_4.addWidget(self.video_run)
-
+        # for 5: lineEditor + button
         self.h_layout_5.addWidget(self.lineEditor_show_)
         self.h_layout_5.addWidget(self.open_m3u8_file)
-
+        # for 6: 2 buttons
         self.h_layout_6.addWidget(self.select_save_path_)
         self.h_layout_6.addWidget(self.check_crawler_result_)
 
@@ -102,7 +102,6 @@ class JustCrawlerWindow(QMainWindow):
         layout_.addLayout(self.h_layout_5)
         layout_.addLayout(self.h_layout_6)
         layout_.addWidget(self.textBrowser_)
-
 
         tabWidget.addTab(container, "CartoonCrawler")
         tabWidget.addTab(container_, "VideoCrawler")
@@ -116,6 +115,7 @@ class JustCrawlerWindow(QMainWindow):
     def comics_run(self):
         # Main codes
         pass
+
     def video_run(self):
         pass
 
