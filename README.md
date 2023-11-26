@@ -55,6 +55,7 @@ You are lucky to find that you can find true image links in the details so you c
 But you are not lucky, you should change the target. But for video, you can find the source m3u8 files.
 
 4.Set the clear folders for your result
+
 You should design a fitted folder structure for your subsequent testing and formal work result in order to avoid the accidents.
 
 My environment:
@@ -328,6 +329,7 @@ python VideoDownloader.py
 ![](examples/video-1-2.png)
 
 ![](examples/video-2.png)
+
 4. Run the `VideoDownloader.py` again.
 
 ![](examples/video-3.png)
