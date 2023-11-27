@@ -6,7 +6,7 @@ Most of them are related to `qt5`.
 
 You had better install the `qt-creator` into your `pycharm` before our work begin.
 
-Version: `Qt 5.12.12`
+Version: `Qt 5.15.9`
 
 The code structure is kept simple because I don't want to complicate things.
 ### Codes for UI
@@ -25,7 +25,7 @@ class JustCrawlerWindow(QMainWindow):
     def __init__(self):
         super().__init__()
         self.setWindowTitle("JustCrawler")
-        self.setWindowIcon(QIcon('icon.png'))
+        self.setWindowIcon(QIcon('img/icon.png'))
         self.setFixedSize(1048, 800)
         # mainframe
         main_frame = QFrame()
@@ -33,7 +33,7 @@ class JustCrawlerWindow(QMainWindow):
         # create TabWidget
         tabWidget = QTabWidget()
         # set banner
-        pixmap = QPixmap('start.png')
+        pixmap = QPixmap('img/start.png')
         banner = QLabel()
         banner.setPixmap(pixmap)
         banner.setScaledContents(True)
@@ -140,6 +140,7 @@ if __name__ == '__main__':
     app.exec_()
 ```
 #### main controlling function
+
 ### Example
 #### comics
 ![](../examples/ui-0.png)
@@ -147,4 +148,114 @@ if __name__ == '__main__':
 
 #### video
 ![](../examples/ui-1.png)
+
 ##### test
+
+### Git tips
+#### turn to your project folder
+```shell
+cd ./CartoonCrawler
+```
+### init
+```shell
+git init .
+```
+
+### add 
+#### anything in current folder
+```shell
+git add .
+```
+#### unique folder
+```shell
+git add prework/
+```
+#### unique file type
+```shell
+git add *.py
+```
+#### more files with different types
+```shell
+git add prework/CartoonCrawler.py target_web_list.txt README.md
+```
+
+### remove
+#### unique folder/file in force
+```shell
+git rm -r test/?.py -f
+```
+#### remove add operator for something 
+```shell
+git reset HEAD test/?.py
+```
+#### remove update operator for something
+```shell
+git checkout -- test/?.py
+```
+
+### commit
+#### check current status
+```shell
+git status
+```
+#### check commit log
+```shell
+git log
+```
+#### commit your work after add operator
+```shell
+git commit -m "my first/second/... commit"
+```
+
+### branch
+#### create new branch
+```shell
+git branch dxz
+```
+#### check current branch
+```shell
+git branch
+```
+#### switch to new branch
+```shell
+git checkout dxz
+```
+#### create a new branch "new_branch" and switch to it
+```shell
+git checkout -b new_branch
+```
+#### remove local branch 
+```shell
+git branch -d main/master
+```
+#### remove remote branch
+```shell
+git push your_set_name --delete remote_branch
+```
+
+### Remote part
+#### connect remote repository
+```shell
+git remote add your_set_name <git_link>
+```
+#### check connection
+```shell
+git remote -v
+```
+#### push your commit
+```shell
+git push -u your_set_name your_branch
+```
+if your_set_name is the same as your_branch, just use:
+```shell
+git push -u your_branch
+```
+if your repository has many branches, remember to change the push target branch.
+
+For example:
+```shell
+git push -u acg main
+```
+```shell
+git push -u acg test
+```

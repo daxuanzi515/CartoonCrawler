@@ -4,3 +4,6 @@ reportlab==3.6.12
 Pillow==9.5.0
 requests==2.29.0
 pipreqs==0.4.13
+PyQt5==5.15.9
+pyqt5_plugins==5.15.9.2.3
+qt_material==2.14

@@ -1,15 +1,20 @@
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QApplication, QMainWindow, QPushButton, QVBoxLayout, \
-    QWidget, QHBoxLayout, QTextEdit, QTextBrowser, QLineEdit, QLabel, QTabWidget, QFrame
+    QWidget, QHBoxLayout, QTextEdit, QTextBrowser, QLineEdit, QLabel, QTabWidget, QFrame, QFileDialog
 from PyQt5.QtGui import QIcon, QPixmap
 from qt_material import apply_stylesheet
+
+import os
+from datetime import datetime
+from utils.comics_crawler import ComicsCrawlerForCMH5, PDF_generator
+from utils.video_crawler import VideoCrawlerForYHDMDM
 
 
 class JustCrawlerWindow(QMainWindow):
     def __init__(self):
         super().__init__()
         self.setWindowTitle("JustCrawler")
-        self.setWindowIcon(QIcon('icon.png'))
+        self.setWindowIcon(QIcon('img/icon.png'))
         self.setFixedSize(1048, 800)
         # mainframe
         main_frame = QFrame()
@@ -17,7 +22,7 @@ class JustCrawlerWindow(QMainWindow):
         # create TabWidget
         tabWidget = QTabWidget()
         # set banner
-        pixmap = QPixmap('start.png')
+        pixmap = QPixmap('img/start.png')
         banner = QLabel()
         banner.setPixmap(pixmap)
         banner.setScaledContents(True)
@@ -111,22 +116,68 @@ class JustCrawlerWindow(QMainWindow):
         main_layout.addLayout(h_layout)
 
         self.setCentralWidget(main_frame)
+        self.function_connect()
 
-    def comics_run(self):
+    def function_connect(self):
+        self.comics_run.clicked.connect(self.comics_RUN)
+        self.open_file_button.clicked.connect(self.open_input_file)
+        self.select_save_path.clicked.connect(self.select_save_path_FUN)
+
+    def comics_RUN(self):
         # Main codes
-        pass
+        print('test')
 
-    def video_run(self):
+    def video_RUN(self):
         pass
 
     def open_input_file(self):
+        file_path, _ = QFileDialog.getOpenFileName(self, "选择输入文件", "", "All Files (*);;Text Files (*.txt)")
+        print(file_path)
+
+    def select_save_path_FUN(self):
+        folder_path = QFileDialog.getExistingDirectory(self, "选择保存路径", "")
+        print(folder_path)
+
+    def check_crawler_result_FUN(self):
         pass
 
-    def select_save_path(self):
-        pass
 
-    def check_crawler_result(self):
-        pass
+# Auxiliary class some tools here
+class Auxiliary:
+    def __init__(self):
+        self.flag = False
+
+    def remove_string_list_tags(self, string_list):
+        # return value: list
+        # parameter: string_list -> list/string
+        # replace ' ', ';', ',' with '\n' and then split using '\n', remove repeated elements
+        if isinstance(string_list, (list, str)):
+            split_list = []
+            if isinstance(string_list, list):
+                split_list = [item.replace(' ', '\n').replace(';', '\n').replace(',', '\n').split('\n') for item in
+                              string_list]
+                flattened_list = [segment.strip() for segments in split_list for segment in segments if segment.strip()]
+                cleaned_list = list(set([item.replace(',', '').replace(';', '') for item in flattened_list]))
+            elif isinstance(string_list, str):
+                split_list = string_list.replace(' ', '\n').replace(';', '\n').replace(',', '\n').split('\n')
+                flattened_list = [item.strip() for item in split_list if item.strip()]
+                cleaned_list = list(set(flattened_list))
+            else:
+                return split_list
+        else:
+            cleaned_list = []
+        return cleaned_list
+
+    def log_generator(self, string_item, log_path, log_name):
+        timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+        log_name = f'{log_name}_{timestamp}.log'
+        log_path = os.path.normpath(os.path.join(log_path, log_name))
+        with open(log_path, 'w') as file:
+            if isinstance(string_item, str):
+                file.write(string_item)
+            elif isinstance(string_item, list):
+                file.writelines(string_item)
+        return log_path
 
 
 if __name__ == '__main__':
