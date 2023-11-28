@@ -1,13 +1,14 @@
-from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import QApplication, QMainWindow, QPushButton, QVBoxLayout, \
-    QWidget, QHBoxLayout, QTextEdit, QTextBrowser, QLineEdit, QLabel, QTabWidget, QFrame, QFileDialog
+from os.path import split
+
+from PyQt5.QtCore import QFile, Qt
 from PyQt5.QtGui import QIcon, QPixmap
+from PyQt5.QtWidgets import QApplication, QMainWindow, QPushButton, QVBoxLayout, \
+    QWidget, QHBoxLayout, QTextEdit, QTextBrowser, QLineEdit, QLabel, QTabWidget, QFrame, QFileDialog, QMessageBox
 from qt_material import apply_stylesheet
 
-import os
-from datetime import datetime
 from utils.comics_crawler import ComicsCrawlerForCMH5, PDF_generator
 from utils.video_crawler import VideoCrawlerForYHDMDM
+from utils.ztool import Auxiliary
 
 
 class JustCrawlerWindow(QMainWindow):
@@ -20,7 +21,7 @@ class JustCrawlerWindow(QMainWindow):
         main_frame = QFrame()
         main_layout = QVBoxLayout(main_frame)
         # create TabWidget
-        tabWidget = QTabWidget()
+        self.tabWidget = QTabWidget()
         # set banner
         pixmap = QPixmap('img/start.png')
         banner = QLabel()
@@ -108,76 +109,108 @@ class JustCrawlerWindow(QMainWindow):
         layout_.addLayout(self.h_layout_6)
         layout_.addWidget(self.textBrowser_)
 
-        tabWidget.addTab(container, "CartoonCrawler")
-        tabWidget.addTab(container_, "VideoCrawler")
+        self.tabWidget.addTab(container, "CartoonCrawler")
+        self.tabWidget.addTab(container_, "VideoCrawler")
         # set main layout
         main_layout.addWidget(banner)
-        main_layout.addWidget(tabWidget)
+        main_layout.addWidget(self.tabWidget)
         main_layout.addLayout(h_layout)
+
+        # global variable
+        # self.comics_string = None
+        # self.comics_input_path = []
+        self.comics_save_path = None
+
+        # self.video_string = None
+        # self.video_input_path = []
+        # self.video_m3u8_path = []
+        self.video_save_path = None
+
+        self.tool = Auxiliary()
 
         self.setCentralWidget(main_frame)
         self.function_connect()
 
     def function_connect(self):
+        # For comics crawler
         self.comics_run.clicked.connect(self.comics_RUN)
-        self.open_file_button.clicked.connect(self.open_input_file)
-        self.select_save_path.clicked.connect(self.select_save_path_FUN)
+        self.open_file_button.clicked.connect(self.comics_openFile)
+        self.select_save_path.clicked.connect(self.comics_saveFile)
+        self.check_crawler_result.clicked.connect(self.check_crawler_result_FUN)
+        # For video crawler
+        self.video_run.clicked.connect(self.video_RUN)
+        self.open_m3u8_file.clicked.connect(self.video_openFile)
+        self.select_save_path_.clicked.connect(self.video_saveFile)
+        self.check_crawler_result_.clicked.connect(self.check_crawler_result_FUN)
+        # For log generator
+        self.log_button.clicked.connect(self.log_generator)
+        # others
 
     def comics_RUN(self):
         # Main codes
-        print('test')
+        pass
 
     def video_RUN(self):
         pass
 
     def open_input_file(self):
         file_path, _ = QFileDialog.getOpenFileName(self, "选择输入文件", "", "All Files (*);;Text Files (*.txt)")
-        print(file_path)
+        return file_path
 
     def select_save_path_FUN(self):
         folder_path = QFileDialog.getExistingDirectory(self, "选择保存路径", "")
-        print(folder_path)
+        return folder_path
 
     def check_crawler_result_FUN(self):
         pass
 
+    def log_generator(self):
+        logging = None
+        if self.getTabStatus() == 'CartoonCrawler':
+            logging = self.textBrowser.toPlainText()
+        elif self.getTabStatus() == 'VideoCrawler':
+            logging = self.textBrowser_.toPlainText()
+        if logging:
+            # 创建新文件对话框
+            directory = QFileDialog.getExistingDirectory(self, "选择文件夹", "")
+            if directory:
+                file_dialog = QFileDialog(self)
+                file_dialog.setWindowTitle("新建文件")
+                file_dialog.setNameFilters(["Log Files (*.log)", "Text Files (*.txt)"])
+                file_dialog.setDirectory(directory)
+                file_dialog.setLabelText(QFileDialog.Accept, "保存")
+                file_dialog.setLabelText(QFileDialog.Reject, "取消")
 
-# Auxiliary class some tools here
-class Auxiliary:
-    def __init__(self):
-        self.flag = False
-
-    def remove_string_list_tags(self, string_list):
-        # return value: list
-        # parameter: string_list -> list/string
-        # replace ' ', ';', ',' with '\n' and then split using '\n', remove repeated elements
-        if isinstance(string_list, (list, str)):
-            split_list = []
-            if isinstance(string_list, list):
-                split_list = [item.replace(' ', '\n').replace(';', '\n').replace(',', '\n').split('\n') for item in
-                              string_list]
-                flattened_list = [segment.strip() for segments in split_list for segment in segments if segment.strip()]
-                cleaned_list = list(set([item.replace(',', '').replace(';', '') for item in flattened_list]))
-            elif isinstance(string_list, str):
-                split_list = string_list.replace(' ', '\n').replace(';', '\n').replace(',', '\n').split('\n')
-                flattened_list = [item.strip() for item in split_list if item.strip()]
-                cleaned_list = list(set(flattened_list))
-            else:
-                return split_list
+                if file_dialog.exec_() == QFileDialog.Accepted:
+                    log_path = file_dialog.selectedFiles()[0]
+                    _, log_name = split(log_path)
+                    log_path = self.tool.log_generator(logging, log_name, log_path)
+                    print('success')
+                else:
+                    print('failed')
         else:
-            cleaned_list = []
-        return cleaned_list
+            print('日志无内容')
 
-    def log_generator(self, string_item, log_path, log_name):
-        timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-        log_name = f'{log_name}_{timestamp}.log'
-        log_path = os.path.normpath(os.path.join(log_path, log_name))
-        with open(log_path, 'w') as file:
-            if isinstance(string_item, str):
-                file.write(string_item)
-            elif isinstance(string_item, list):
-                file.writelines(string_item)
-        return log_path
+    def getTabStatus(self):
+        current_tab_index = self.tabWidget.currentIndex()
+        current_tab_name = self.tabWidget.tabText(current_tab_index)
+        return current_tab_name
+
+    def comics_openFile(self):
+        temp_comics_input_path = self.open_input_file()
+        comics_input_path = self.tool.remove_string_list_tags(temp_comics_input_path)
+        return comics_input_path
+
+    def video_openFile(self):
+        temp_video_input_path = self.open_input_file()
+        video_input_path = self.tool.remove_string_list_tags(temp_video_input_path)
+        return video_input_path
+
+    def comics_saveFile(self):
+        self.comics_save_path = self.select_save_path_FUN()
+
+    def video_saveFile(self):
+        self.video_save_path = self.select_save_path_FUN()
 
 
 if __name__ == '__main__':

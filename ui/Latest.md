@@ -141,6 +141,8 @@ if __name__ == '__main__':
 ```
 #### main controlling function
 
+#### fix the function of input and output
+
 ### Example
 #### comics
 ![](../examples/ui-0.png)
