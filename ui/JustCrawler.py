@@ -197,20 +197,83 @@ class JustCrawlerWindow(QMainWindow):
         return current_tab_name
 
     def comics_openFile(self):
-        temp_comics_input_path = self.open_input_file()
-        comics_input_path = self.tool.remove_string_list_tags(temp_comics_input_path)
-        return comics_input_path
+        comics_input_path = self.open_input_file()
+        self.lineEditor_show.setText(comics_input_path)
 
     def video_openFile(self):
-        temp_video_input_path = self.open_input_file()
-        video_input_path = self.tool.remove_string_list_tags(temp_video_input_path)
-        return video_input_path
+        video_input_path = self.open_input_file()
+        self.lineEditor_show_.setText(video_input_path)
 
     def comics_saveFile(self):
         self.comics_save_path = self.select_save_path_FUN()
 
     def video_saveFile(self):
         self.video_save_path = self.select_save_path_FUN()
+
+    # noinspection DuplicatedCode
+    def HandleInputWeb(self):
+        if self.getTabStatus() == 'CartoonCrawler':
+            input_string = self.textEditor_input.toPlainText()
+            input_file = self.lineEditor_show.text()
+
+            if input_string and input_file:
+                input_string = self.tool.remove_string_list_tags(input_string)
+                with open(input_file, 'r') as file:
+                    input_content = file.read()
+                input_content = self.tool.remove_string_list_tags(input_content)
+                merge_list = input_string + input_content
+                merge_list = list(set(merge_list))
+                return merge_list
+
+            elif input_string and not input_file:
+                input_string = self.tool.remove_string_list_tags(input_string)
+                return input_string
+
+            elif input_file and not input_string:
+                with open(input_file, 'r') as file:
+                    input_content = file.read()
+                input_content = self.tool.remove_string_list_tags(input_content)
+                return input_content
+
+            else:
+                return False
+        else:
+            input_string = self.textEditor_input_web.toPlainText()
+
+            if input_string:
+                input_string = self.tool.remove_string_list_tags(input_string)
+                return input_string
+            else:
+                return False
+
+    def HandleInputM3U8(self):
+        if self.getTabStatus() == 'VideoCrawler':
+            m3u8_string = self.textEditor_input_m3u8.toPlainText()
+            m3u8_file = self.lineEditor_show_.text()
+
+            if m3u8_string and m3u8_file:
+                m3u8_string = self.tool.remove_string_list_tags(m3u8_string)
+                with open(m3u8_file, 'r') as file:
+                    m3u8_content = file.read()
+                m3u8_content = self.tool.remove_string_list_tags(m3u8_content)
+                merge_list = m3u8_string + m3u8_content
+                merge_list = list(set(merge_list))
+                return merge_list
+
+            elif m3u8_string and not m3u8_file:
+                input_string = self.tool.remove_string_list_tags(m3u8_string)
+                return input_string
+
+            elif m3u8_file and not m3u8_string:
+                with open(m3u8_file, 'r') as file:
+                    m3u8_content = file.read()
+                m3u8_content = self.tool.remove_string_list_tags(m3u8_content)
+                return m3u8_content
+
+            else:
+                return False
+        else:
+            return False
 
 
 if __name__ == '__main__':
